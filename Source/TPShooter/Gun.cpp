@@ -26,7 +26,7 @@ void AGun::PullTrigger()
 		FRotator viewPointRotation;
 		ownerController->GetPlayerViewPoint(viewPointLocation, viewPointRotation);
 		//Debug de camara
-		DrawDebugCamera(GetWorld(), viewPointLocation, viewPointRotation, 90, 2, FColor::Red, true);
+		//DrawDebugCamera(GetWorld(), viewPointLocation, viewPointRotation, 90, 2, FColor::Red, true);
 		//Raycast
 		FVector endPoint = viewPointLocation + (viewPointRotation.Vector() * maxRange);
 		FHitResult hit;
@@ -37,7 +37,7 @@ void AGun::PullTrigger()
 
 		if (isHit) 
 		{
-			DrawDebugSphere(GetWorld(), hit.ImpactPoint, 5, 8, FColor::Red, true);
+			DrawDebugSphere(GetWorld(), hit.ImpactPoint, 5, 8, FColor::Yellow, true);
 		}
 	}
 }

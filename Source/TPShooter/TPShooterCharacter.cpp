@@ -12,21 +12,6 @@
 #include "InputActionValue.h"
 #include "TPShooter.h"
 
-void ATPShooterCharacter::BeginPlay() 
-{
-	Super::BeginPlay();
-
-	GetMesh()->HideBoneByName("weapon_r", EPhysBodyOp::PBO_None);
-
-	currentGun = GetWorld()->SpawnActor<AGun>(gunClass);
-	if (currentGun) 
-	{
-		currentGun->SetOwner(this);
-		currentGun-> AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("weaponSocket"));
-		currentGun->ownerController = GetController();
-	}
-}
-
 ATPShooterCharacter::ATPShooterCharacter()
 {
 	// Set size for collision capsule
@@ -81,11 +66,27 @@ void ATPShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ATPShooterCharacter::Look);
 
-		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Started, this, &ATPShooterCharacter::Shoot);
+		//Shooting
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Triggered, this, &ATPShooterCharacter::Shoot);
 	}
 	else
 	{
 		UE_LOG(LogTPShooter, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
+	}
+}
+
+void ATPShooterCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	GetMesh()->HideBoneByName("weapon_r", EPhysBodyOp::PBO_None);
+
+	currentGun = GetWorld()->SpawnActor<AGun>(gunClass);
+	if (currentGun)
+	{
+		currentGun->SetOwner(this);
+		currentGun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("weaponSocket"));
+		currentGun->ownerController = GetController();
 	}
 }
 
@@ -107,13 +108,10 @@ void ATPShooterCharacter::Look(const FInputActionValue& Value)
 	DoLook(LookAxisVector.X, LookAxisVector.Y);
 }
 
-void ATPShooterCharacter::Shoot()
+void ATPShooterCharacter::Shoot(const FInputActionValue& Value)
 {
 	UE_LOG(LogTemp, Warning, TEXT("IsShooting"));
-	
-	if (currentGun) {
-
-	}
+	if (currentGun) currentGun->PullTrigger();
 }
 
 void ATPShooterCharacter::DoMove(float Right, float Forward)
