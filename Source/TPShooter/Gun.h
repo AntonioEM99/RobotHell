@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "Gun.generated.h"
 
 UCLASS()
@@ -26,6 +28,18 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float maxRange = 8000.0f;
+
+	UPROPERTY(VisibleAnywhere)
+	UNiagaraComponent* flashParticle;
+
+	UPROPERTY(EditAnywhere)
+	UNiagaraSystem* impactParticle;
+
+	UPROPERTY(EditAnywhere)
+	USoundBase* shootSound;
+
+	UPROPERTY(EditAnywhere)
+	float bulletDamage = 10.0f;
 
 	void PullTrigger();
 
