@@ -14,10 +14,15 @@ AGun::AGun()
 
 	skeletalMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	skeletalMeshComp->SetupAttachment(rootComp);
+
+	flashParticle = CreateDefaultSubobject<UNiagaraComponent>(TEXT("FlashParticle"));
+	flashParticle->SetupAttachment(rootComp);
 }
 
 void AGun::PullTrigger()
 {
+	flashParticle->Activate(true);
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), shootSound, GetActorLocation());
 	
 	if (ownerController) 
 	{
@@ -27,17 +32,27 @@ void AGun::PullTrigger()
 		ownerController->GetPlayerViewPoint(viewPointLocation, viewPointRotation);
 		//Debug de camara
 		//DrawDebugCamera(GetWorld(), viewPointLocation, viewPointRotation, 90, 2, FColor::Red, true);
+
 		//Raycast
 		FVector endPoint = viewPointLocation + (viewPointRotation.Vector() * maxRange);
+
 		FHitResult hit;
 		FCollisionQueryParams params;
 		params.AddIgnoredActor(GetOwner());
 		params.AddIgnoredActor(this);
+
 		bool isHit = GetWorld()->LineTraceSingleByChannel(hit, viewPointLocation, endPoint, ECC_GameTraceChannel2, params);
 
 		if (isHit) 
 		{
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), impactParticle, hit.ImpactPoint, hit.ImpactPoint.Rotation());
 			DrawDebugSphere(GetWorld(), hit.ImpactPoint, 5, 8, FColor::Yellow, true);
+
+			AActor* hitActor = hit.GetActor();
+			if (hitActor) 
+			{
+				UGameplayStatics::ApplyDamage(hitActor, bulletDamage, ownerController, this, UDamageType::StaticClass());
+			}
 		}
 	}
 }

@@ -53,7 +53,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* ShootAction;
 
-
 public:
 
 	/** Constructor */
@@ -95,11 +94,22 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoJumpEnd();
 
+	UFUNCTION()
+	void OnDamageTaken(AActor* damagedActor, float Damage, const class UDamageType* DamageType, class AController* instigatedBy, AActor* DamageCauser);
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AGun> gunClass;
 
 	UPROPERTY(VisibleAnywhere)
 	AGun* currentGun;
+
+	UPROPERTY(EditAnywhere)
+	float maxHealth = 100.0f;
+
+	float health;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool isAlive = true;
 
 public:
 

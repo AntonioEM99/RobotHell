@@ -67,7 +67,7 @@ void ATPShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ATPShooterCharacter::Look);
 
 		//Shooting
-		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Triggered, this, &ATPShooterCharacter::Shoot);
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Started, this, &ATPShooterCharacter::Shoot);
 	}
 	else
 	{
@@ -78,6 +78,10 @@ void ATPShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 void ATPShooterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	health = maxHealth;
+
+	OnTakeAnyDamage.AddDynamic(this, &ATPShooterCharacter::OnDamageTaken);
 
 	GetMesh()->HideBoneByName("weapon_r", EPhysBodyOp::PBO_None);
 
@@ -156,4 +160,20 @@ void ATPShooterCharacter::DoJumpEnd()
 {
 	// signal the character to stop jumping
 	StopJumping();
+}
+
+void ATPShooterCharacter::OnDamageTaken(AActor* damagedActor, float Damage, const UDamageType* DamageType, AController* instigatedBy, AActor* DamageCauser)
+{
+	if (isAlive)
+	{
+		health -= Damage;
+		UE_LOG(LogTemp, Warning, TEXT("Damage, current health: %f"), health);
+		if (health <= 0)
+		{
+			isAlive = false;
+			health = 0;
+			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			UE_LOG(LogTemp, Warning, TEXT("Player is dead"));
+		}
+	}
 }
