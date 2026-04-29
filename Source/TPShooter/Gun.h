@@ -29,6 +29,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	float maxRange = 8000.0f;
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void HandleShoot();
+
 	UPROPERTY(VisibleAnywhere)
 	UNiagaraComponent* flashParticle;
 

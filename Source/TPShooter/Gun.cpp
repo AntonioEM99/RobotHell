@@ -19,11 +19,14 @@ AGun::AGun()
 	flashParticle->SetupAttachment(rootComp);
 }
 
+
+
 void AGun::PullTrigger()
 {
 	flashParticle->Activate(true);
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), shootSound, GetActorLocation());
-	
+	HandleShoot();
+
 	if (ownerController) 
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Disparo"));
