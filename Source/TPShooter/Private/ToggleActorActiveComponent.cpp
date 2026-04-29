@@ -22,6 +22,10 @@ void UToggleActorActiveComponent::SetActorActive(bool active)
 	actor->SetActorEnableCollision(active);
 }
 
+void UToggleActorActiveComponent::Naco()
+{
+}
+
 // Called when the game starts
 void UToggleActorActiveComponent::BeginPlay()
 {
