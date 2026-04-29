@@ -3,14 +3,6 @@
 
 #include "IPooled.h"
 
-void IIPooled::OnSpawn(AActor* instigator)
-{
-}
-
-void IIPooled::LifeTime(float time)
-{
-}
-
 void IIPooled::OnSpawn_Implementation(AActor* instigator)
 {
 }

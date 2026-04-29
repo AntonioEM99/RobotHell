@@ -18,6 +18,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetActorActive(bool active);
 
+	UFUNCTION(BlueprintCallable)
+	void Naco();
+
 protected:
 	virtual void BeginPlay() override;
 
