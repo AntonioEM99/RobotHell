@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "TPShooterCharacter.h"
+#include "EnemyAI.h"
 #include "TPShooterGameMode.generated.h"
 
 /**
@@ -15,9 +17,15 @@ class ATPShooterGameMode : public AGameModeBase
 	GENERATED_BODY()
 
 public:
-	
 	/** Constructor */
 	ATPShooterGameMode();
+
+protected:
+	virtual void BeginPlay() override;
+	
+
+	ATPShooterCharacter* player;
+	TArray<AActor*> enemyArray;
 };
 
 
