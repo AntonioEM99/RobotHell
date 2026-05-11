@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
+#include "TPShooterPlayerController.h"
 #include "Gun.h"
 #include "TPShooterCharacter.generated.h"
 
@@ -74,9 +75,9 @@ protected:
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 
-	void Shoot(const FInputActionValue& Value);
 
 public:
+
 
 	/** Handles move inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
@@ -94,6 +95,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoJumpEnd();
 
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void Shoot();
+
 	UFUNCTION()
 	void OnDamageTaken(AActor* damagedActor, float Damage, const class UDamageType* DamageType, class AController* instigatedBy, AActor* DamageCauser);
 
@@ -110,6 +114,12 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	bool isAlive = true;
+
+	float gameOverDelay = 3.0f;
+
+	void RestartGameLevel();
+
+	void UpdateHUD();
 
 public:
 
