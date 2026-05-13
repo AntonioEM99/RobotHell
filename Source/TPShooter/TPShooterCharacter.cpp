@@ -112,7 +112,7 @@ void ATPShooterCharacter::Look(const FInputActionValue& Value)
 	DoLook(LookAxisVector.X, LookAxisVector.Y);
 }
 
-void ATPShooterCharacter::Shoot(const FInputActionValue& Value)
+void ATPShooterCharacter::Shoot()
 {
 	UE_LOG(LogTemp, Warning, TEXT("IsShooting"));
 	if (currentGun) currentGun->PullTrigger();
@@ -168,12 +168,33 @@ void ATPShooterCharacter::OnDamageTaken(AActor* damagedActor, float Damage, cons
 	{
 		health -= Damage;
 		UE_LOG(LogTemp, Warning, TEXT("Damage, current health: %f"), health);
+		UpdateHUD();
 		if (health <= 0)
 		{
 			isAlive = false;
 			health = 0;
 			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			UE_LOG(LogTemp, Warning, TEXT("Player is dead"));
+		}
+	}
+}
+
+void ATPShooterCharacter::RestartGameLevel()
+{
+	FString name = UGameplayStatics::GetCurrentLevelName(GetWorld());
+	UGameplayStatics::OpenLevel(GetWorld(), *name);
+}
+
+void ATPShooterCharacter::UpdateHUD()
+{
+	ATPShooterPlayerController* playerController = Cast<ATPShooterPlayerController>(GetController());
+	if (playerController)
+	{
+		playerController->hudWidget->SetPorcent(health / maxHealth);
+		if (health <= 0)
+		{
+			FTimerHandle gameOverHandle;
+			GetWorldTimerManager().SetTimer(gameOverHandle, this, &ATPShooterCharacter::RestartGameLevel, gameOverDelay, false);
 		}
 	}
 }
