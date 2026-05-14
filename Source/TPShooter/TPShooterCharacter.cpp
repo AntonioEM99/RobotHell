@@ -1,5 +1,3 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #include "TPShooterCharacter.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
@@ -10,170 +8,138 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
-#include "TPShooter.h"
+#include "TPShooterPlayerController.h"
+#include "Kismet/GameplayStatics.h" // Importante para OpenLevel
 
 ATPShooterCharacter::ATPShooterCharacter()
 {
-	// Set size for collision capsule
-	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
-		
-	// Don't rotate when the controller rotates. Let that just affect the camera.
-	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = false;
-	bUseControllerRotationRoll = false;
+    // Mantenemos la configuración física básica
+    GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
+       
+    bUseControllerRotationPitch = false;
+    bUseControllerRotationYaw = false;
+    bUseControllerRotationRoll = false;
 
-	// Configure character movement
-	GetCharacterMovement()->bOrientRotationToMovement = true;
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
+    GetCharacterMovement()->bOrientRotationToMovement = true;
+    GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
 
-	// Note: For faster iteration times these variables, and many more, can be tweaked in the Character Blueprint
-	// instead of recompiling to adjust them
-	GetCharacterMovement()->JumpZVelocity = 500.f;
-	GetCharacterMovement()->AirControl = 0.35f;
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
-	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
-	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
-	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
+    // Movimiento del jugador
+    GetCharacterMovement()->JumpZVelocity = 500.f;
+    GetCharacterMovement()->AirControl = 0.35f;
+    GetCharacterMovement()->MaxWalkSpeed = 500.f;
 
-	// Create a camera boom (pulls in towards the player if there is a collision)
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 300.0f;
-	CameraBoom->bUsePawnControlRotation = true;
+    // --- CÁMARAS: Esto es lo que NO tendrá el enemigo ---
+    CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+    CameraBoom->SetupAttachment(RootComponent);
+    CameraBoom->TargetArmLength = 300.0f;
+    CameraBoom->bUsePawnControlRotation = true;
 
-	// Create a follow camera
-	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
-	FollowCamera->bUsePawnControlRotation = false;
-
-	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
-	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
-}
-
-void ATPShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	// Set up action bindings
-	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
-		
-		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
-
-		// Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ATPShooterCharacter::Move);
-		EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &ATPShooterCharacter::Look);
-
-		// Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ATPShooterCharacter::Look);
-
-		//Shooting
-		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Started, this, &ATPShooterCharacter::Shoot);
-	}
-	else
-	{
-		UE_LOG(LogTPShooter, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
-	}
+    FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+    FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+    FollowCamera->bUsePawnControlRotation = false;
 }
 
 void ATPShooterCharacter::BeginPlay()
 {
-	Super::BeginPlay();
+    // El Super llama a AATPCharacterBase::BeginPlay(), que spawnea el arma y setea la vida
+    Super::BeginPlay();
 
-	health = maxHealth;
-
-	OnTakeAnyDamage.AddDynamic(this, &ATPShooterCharacter::OnDamageTaken);
-
-	GetMesh()->HideBoneByName("weapon_r", EPhysBodyOp::PBO_None);
-
-	currentGun = GetWorld()->SpawnActor<AGun>(gunClass);
-	if (currentGun)
-	{
-		currentGun->SetOwner(this);
-		currentGun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("weaponSocket"));
-		currentGun->ownerController = GetController();
-	}
+    // Lógica visual específica del jugador
+    GetMesh()->HideBoneByName("weapon_r", EPhysBodyOp::PBO_None);
+    
+    // Inicializamos el HUD
+    UpdateHUD();
 }
+
+void ATPShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+    // Llamamos al Super por buena práctica, aunque ACharacter::SetupPlayerInputComponent suela estar vacío
+    Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+    if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) 
+    {
+        // Salto: Usamos tus métodos personalizados que envuelven la lógica de Jump
+        EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ATPShooterCharacter::DoJumpStart);
+        EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ATPShooterCharacter::DoJumpEnd);
+
+        // Movimiento y Cámara
+        EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ATPShooterCharacter::Move);
+        EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ATPShooterCharacter::Look);
+        EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &ATPShooterCharacter::Look);
+
+        // Disparo: Llama a Shoot(), que ahora reside en AATPCharacterBase
+        EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Started, this, &ATPShooterCharacter::Shoot);
+    }
+    else
+    {
+        // Log de error por si falla el cast (útil para debuguear)
+        UE_LOG(LogTemp, Error, TEXT("Fallo al encontrar Enhanced Input Component"));
+    }
+}
+
+void ATPShooterCharacter::UpdateHUD()
+{
+    ATPShooterPlayerController* playerController = Cast<ATPShooterPlayerController>(GetController());
+    if (playerController && playerController->hudWidget)
+    {
+       // Usamos health y maxHealth que vienen de la clase Base
+       playerController->hudWidget->SetPorcent(health / maxHealth);
+       
+       if (health <= 0)
+       {
+          FTimerHandle gameOverHandle;
+          GetWorldTimerManager().SetTimer(gameOverHandle, this, &ATPShooterCharacter::RestartGameLevel, gameOverDelay, false);
+       }
+    }
+}
+
+// --- LOGICA DE MOVIMIENTO (Se queda aquí porque es para el Player) ---
 
 void ATPShooterCharacter::Move(const FInputActionValue& Value)
 {
-	// input is a Vector2D
-	FVector2D MovementVector = Value.Get<FVector2D>();
-
-	// route the input
-	DoMove(MovementVector.X, MovementVector.Y);
+    FVector2D MovementVector = Value.Get<FVector2D>();
+    DoMove(MovementVector.X, MovementVector.Y);
 }
 
 void ATPShooterCharacter::Look(const FInputActionValue& Value)
 {
-	// input is a Vector2D
-	FVector2D LookAxisVector = Value.Get<FVector2D>();
-
-	// route the input
-	DoLook(LookAxisVector.X, LookAxisVector.Y);
-}
-
-void ATPShooterCharacter::Shoot(const FInputActionValue& Value)
-{
-	UE_LOG(LogTemp, Warning, TEXT("IsShooting"));
-	if (currentGun) currentGun->PullTrigger();
+    FVector2D LookAxisVector = Value.Get<FVector2D>();
+    DoLook(LookAxisVector.X, LookAxisVector.Y);
 }
 
 void ATPShooterCharacter::DoMove(float Right, float Forward)
 {
-	if (GetController() != nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("isMoving"));
+    if (GetController() != nullptr)
+    {
+       const FRotator Rotation = GetController()->GetControlRotation();
+       const FRotator YawRotation(0, Rotation.Yaw, 0);
+       const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+       const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-		// find out which way is forward
-		const FRotator Rotation = GetController()->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-		// get forward vector
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-
-		// get right vector 
-		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-		// add movement 
-		AddMovementInput(ForwardDirection, Forward);
-		AddMovementInput(RightDirection, Right);
-	}
+       AddMovementInput(ForwardDirection, Forward);
+       AddMovementInput(RightDirection, Right);
+    }
 }
 
 void ATPShooterCharacter::DoLook(float Yaw, float Pitch)
 {
-	if (GetController() != nullptr)
-	{
-		// add yaw and pitch input to controller
-		AddControllerYawInput(Yaw);
-		AddControllerPitchInput(Pitch);
-	}
+    AddControllerYawInput(Yaw);
+    AddControllerPitchInput(Pitch);
 }
 
 void ATPShooterCharacter::DoJumpStart()
 {
-	// signal the character to jump
-	Jump();
+    // Llama a la función Jump() heredada de ACharacter
+    Jump();
 }
 
 void ATPShooterCharacter::DoJumpEnd()
 {
-	// signal the character to stop jumping
-	StopJumping();
+    // Llama a StopJumping() heredada de ACharacter
+    StopJumping();
 }
 
-void ATPShooterCharacter::OnDamageTaken(AActor* damagedActor, float Damage, const UDamageType* DamageType, AController* instigatedBy, AActor* DamageCauser)
+void ATPShooterCharacter::RestartGameLevel()
 {
-	if (isAlive)
-	{
-		health -= Damage;
-		UE_LOG(LogTemp, Warning, TEXT("Damage, current health: %f"), health);
-		if (health <= 0)
-		{
-			isAlive = false;
-			health = 0;
-			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			UE_LOG(LogTemp, Warning, TEXT("Player is dead"));
-		}
-	}
+    UGameplayStatics::OpenLevel(GetWorld(), FName(*UGameplayStatics::GetCurrentLevelName(GetWorld())));
 }
