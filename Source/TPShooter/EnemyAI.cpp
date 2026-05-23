@@ -16,21 +16,20 @@ void AEnemyAI::Tick(float DeltaSeconds)
 
 void AEnemyAI::StartbehaviorTree(ATPShooterCharacter* character)
 {
-	if (enemyTree)
+	if(enemyTree)
 	{
 		myCharacter = Cast<ATPShooterCharacter>(GetPawn());
 		PlayerPawn = character;
 
-		if (myCharacter && PlayerPawn)
+		RunBehaviorTree(enemyTree);
+		if(myCharacter || PlayerPawn)
 		{
-			RunBehaviorTree(enemyTree);
-
 			UBlackboardComponent* blackboard = GetBlackboardComponent();
-
 			if (blackboard)
 			{
-				blackboard->SetValueAsVector("StartLocation", myCharacter->GetActorLocation());
-				blackboard->SetValueAsVector("PlayerLocation", PlayerPawn->GetActorLocation());
+
+				GetBlackboardComponent()->SetValueAsVector("StartLocation", myCharacter->GetActorLocation());
+				GetBlackboardComponent()->SetValueAsVector("PlayerLocation", PlayerPawn->GetActorLocation());
 			}
 		}
 	}

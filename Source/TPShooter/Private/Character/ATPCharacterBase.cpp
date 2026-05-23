@@ -1,6 +1,5 @@
 #include "Character/ATPCharacterBase.h"
 #include "Components/CapsuleComponent.h"
-#include "TPShooterCharacter.h"
 
 AATPCharacterBase::AATPCharacterBase()
 {
@@ -30,14 +29,10 @@ void AATPCharacterBase::BeginPlay()
 
 void AATPCharacterBase::Shoot()
 {
-	if (!isAlive || !currentGun)
+	if (currentGun && isAlive) 
 	{
-		return;
+		currentGun->PullTrigger();
 	}
-
-	currentGun->SetOwner(this);
-	currentGun->ownerController = GetController();
-	currentGun->PullTrigger();
 }
 
 void AATPCharacterBase::OnDamageTaken(AActor* damagedActor, float Damage, const UDamageType* DamageType, AController* instigatedBy, AActor* DamageCauser)
@@ -45,22 +40,12 @@ void AATPCharacterBase::OnDamageTaken(AActor* damagedActor, float Damage, const 
 	if (isAlive)
 	{
 		health -= Damage;
-		health = FMath::Clamp(health, 0.0f, maxHealth);
-
 		if (health <= 0)
 		{
 			isAlive = false;
 			health = 0;
 			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			// Aquí puedes añadir una animación de muerte después
-		}
-
-		if (ATPShooterCharacter* player = Cast<ATPShooterCharacter>(this))
-		{
-			if (player->IsPlayerControlled())
-			{
-				player->UpdateHUD();
-			}
 		}
 	}
 }

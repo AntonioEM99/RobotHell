@@ -2,8 +2,6 @@
 
 
 #include "Gun.h"
-#include "GameFramework/Pawn.h"
-#include "DrawDebugHelpers.h"
 
 // Sets default values
 AGun::AGun()

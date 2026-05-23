@@ -24,8 +24,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	USkeletalMeshComponent* skeletalMeshComp;
 
-	UPROPERTY()
-	AController* ownerController = nullptr;
+	AController* ownerController;
 
 	UPROPERTY(EditAnywhere)
 	float maxRange = 8000.0f;
