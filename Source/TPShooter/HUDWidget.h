@@ -16,9 +16,10 @@ class TPSHOOTER_API UHUDWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, meta=(BindWindget))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "UI")
 	UProgressBar* HealthBar;
 
+	UFUNCTION(BlueprintCallable)
 	void SetPorcent(float value);
 	
 };

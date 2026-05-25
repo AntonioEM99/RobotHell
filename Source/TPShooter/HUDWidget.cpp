@@ -5,8 +5,8 @@
 
 void UHUDWidget::SetPorcent(float value)
 {
-	if(value > 0.0f && value <1.0f)
+	if (HealthBar)
 	{
-		HealthBar->SetPercent(value);
+		HealthBar->SetPercent(FMath::Clamp(value, 0.0f, 1.0f));
 	}
 }
