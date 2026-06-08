@@ -40,6 +40,27 @@ void AATPCharacterBase::Shoot()
 	currentGun->PullTrigger();
 }
 
+void AATPCharacterBase::HealingPlayer(float medkit)
+{
+	health += medkit;
+	health = FMath::Clamp(health, 0.0f, maxHealth);
+
+	if (ATPShooterCharacter* Player = Cast<ATPShooterCharacter>(this))
+	{
+
+		if (Player->IsPlayerControlled())
+		{
+			if (health >= maxHealth)
+			{
+				health = maxHealth;
+				Player->UpdateHUD();
+			}
+			Player->UpdateHUD();
+		}
+	}
+	UE_LOG(LogTemp, Warning, TEXT("Healing %f"), health);
+}
+
 void AATPCharacterBase::OnDamageTaken(AActor* damagedActor, float Damage, const UDamageType* DamageType, AController* instigatedBy, AActor* DamageCauser)
 {
 	if (isAlive)

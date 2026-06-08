@@ -41,6 +41,23 @@ void UtriggerComp::OnOverlapBegin(UPrimitiveComponent* verlappedComp, AActor* ot
 {
 	if(otherActor && otherActor->ActorHasTag("Player"))
 	{
+		if (IsMedKit)
+		{
+			player = Cast<ATPShooterCharacter>(otherActor);
+
+			if (!player) return;
+
+			player->HealingPlayer(medKits);
+
+			AActor* Owner = GetOwner();
+			if (Owner)
+			{
+				Owner->Destroy();
+			}
+
+			return;
+		}
+
 		if (!isTriggered)
 		{
 			trigger(true);
