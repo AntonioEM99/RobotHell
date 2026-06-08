@@ -39,7 +39,4 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Stats")
 	bool isAlive = true;
-
-	UFUNCTION()
-	virtual void HealingPlayer(float medkit);
 };
