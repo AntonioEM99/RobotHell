@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/BoxComponent.h"
 #include "Move.h"
+#include "TPShooterCharacter.h"
 #include "triggerComp.generated.h"
 
 /**
