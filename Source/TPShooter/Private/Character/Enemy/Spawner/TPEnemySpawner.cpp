@@ -34,10 +34,23 @@ void ATPEnemySpawner::BeginPlay()
 		
 		if (PooledEnemy)
 		{
-			// Los mandamos lejos y los desactivamos
+			// Forzamos la creación del AI Controller
+			PooledEnemy->SpawnDefaultController();
+
+			UE_LOG(
+				LogTemp,
+				Warning,
+				TEXT("Controller = %s"),
+				PooledEnemy->GetController()
+				? *PooledEnemy->GetController()->GetName()
+				: TEXT("NULL")
+			);
+
+			// Los mandamos al pool
 			PooledEnemy->SetActorHiddenInGame(true);
 			PooledEnemy->SetActorEnableCollision(false);
 			PooledEnemy->SetActorTickEnabled(false);
+
 			EnemyPool.Add(PooledEnemy);
 		}
 	}
@@ -66,6 +79,17 @@ void ATPEnemySpawner::GetEnemyFromPool()
 			Enemy->SetActorHiddenInGame(false);
 			Enemy->SetActorEnableCollision(true);
 			Enemy->SetActorTickEnabled(true);
+
+
+			UE_LOG(
+				LogTemp,
+				Warning,
+				TEXT("Enemy despertado. Controller = %s"),
+				Enemy->GetController()
+				? *Enemy->GetController()->GetName()
+				: TEXT("NULL")
+			);
+
           
 			// 2. Reset de variables lógicas
 			Enemy->health = Enemy->maxHealth;

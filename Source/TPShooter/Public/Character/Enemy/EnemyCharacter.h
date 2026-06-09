@@ -19,5 +19,4 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	// Aquí podrías añadir lógica para cuando el enemigo muere (ej. soltar loot)
 };

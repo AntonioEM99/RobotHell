@@ -44,4 +44,7 @@ public:
 	bool isAlive = true;
 
 
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	bool bCanUseWeapons = true;
+
 };
