@@ -39,4 +39,7 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Stats")
 	bool isAlive = true;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UCameraShakeBase> cameraShake;
 };
