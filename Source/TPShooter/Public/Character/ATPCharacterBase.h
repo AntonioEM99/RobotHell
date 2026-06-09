@@ -24,6 +24,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	void Shoot();
 
+	UFUNCTION()
+	virtual void HealingPlayer(float medkit);
+
 	// Variables de combate (Protected para que los hijos las vean)
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TSubclassOf<AGun> gunClass;
@@ -40,6 +43,8 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Stats")
 	bool isAlive = true;
 
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UCameraShakeBase> cameraShake;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	bool bCanUseWeapons = true;
+
 };

@@ -21,6 +21,14 @@ void AEnemyCharacter::BeginPlay()
 	// Super llama a AATPCharacterBase::BeginPlay(), que spawnea el arma
 	Super::BeginPlay();
 
-	// El enemigo no necesita ocultar huesos específicos ni actualizar HUDs de jugador
-	UE_LOG(LogTemp, Warning, TEXT("Enemigo spawneado con exito"));
+	UE_LOG(LogTemp, Warning, TEXT("Enemy spawned"));
+
+	if (GetController())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Controller: %s"), *GetController()->GetName());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("NO CONTROLLER"));
+	}
 }
