@@ -68,7 +68,6 @@ public:
     void RestartGameLevel();
     void UpdateHUD();
 
-
 public:
     FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
     FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }

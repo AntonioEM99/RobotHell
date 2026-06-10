@@ -43,7 +43,7 @@ public:
 	USoundBase* shootSound;
 
 	UPROPERTY(EditAnywhere)
-	float bulletDamage = 10.0f;
+	float bulletDamage = 100.0f;
 
 	void PullTrigger();
 

@@ -54,7 +54,6 @@ void AATPCharacterBase::HealingPlayer(float medkit)
 	}
 }
 
-
 void AATPCharacterBase::OnDamageTaken(AActor* damagedActor, float Damage, const UDamageType* DamageType, AController* instigatedBy, AActor* DamageCauser)
 {
 	if (isAlive)

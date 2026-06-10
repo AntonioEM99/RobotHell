@@ -24,9 +24,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	void Shoot();
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Pool")
-	void Spawning();
-
 	UFUNCTION()
 	virtual void HealingPlayer(float medkit);
 
@@ -52,6 +49,4 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UCameraShakeBase> cameraShake;
-
-
 };

@@ -94,8 +94,6 @@ void ATPEnemySpawner::GetEnemyFromPool()
 			// 2. Reset de variables lógicas
 			Enemy->health = Enemy->maxHealth;
 			Enemy->isAlive = true;
-			Enemy->Spawning();
-			
 
 			// 3. REINICIO DE NAVEGACIÓN (Clave para el NavMesh)
 			AAIController* AIC = Cast<AAIController>(Enemy->GetController());
@@ -105,7 +103,7 @@ void ATPEnemySpawner::GetEnemyFromPool()
 				AIC->StopMovement();
               
 				// Opcional: Si usas Behavior Trees, puedes reiniciarlo aquí
-				//AIC->GetBrainComponent()->RestartLogic();
+				// AIC->GetBrainComponent()->RestartLogic();
 			}
 
 			UE_LOG(LogTemp, Warning, TEXT("Pool: Enemigo despertado y NavMesh listo!"));
