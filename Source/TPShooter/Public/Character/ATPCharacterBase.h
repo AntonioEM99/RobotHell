@@ -24,6 +24,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	void Shoot();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Pool")
+	void OnRespawned();
+
 	UFUNCTION()
 	virtual void HealingPlayer(float medkit);
 

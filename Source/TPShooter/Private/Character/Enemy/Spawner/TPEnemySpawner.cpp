@@ -94,6 +94,9 @@ void ATPEnemySpawner::GetEnemyFromPool()
 			// 2. Reset de variables lógicas
 			Enemy->health = Enemy->maxHealth;
 			Enemy->isAlive = true;
+			Enemy->OnRespawned();
+
+
 
 			// 3. REINICIO DE NAVEGACIÓN (Clave para el NavMesh)
 			AAIController* AIC = Cast<AAIController>(Enemy->GetController());
