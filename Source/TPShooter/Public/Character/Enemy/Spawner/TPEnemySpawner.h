@@ -40,7 +40,7 @@ protected:
 	int32 PoolSize = 5;
 
 	UPROPERTY(EditAnywhere, Category = "Spawning")
-	float SpawnInterval = 5.0f;
+	float SpawnInterval = 3.0f;
 
 private:
 	// Nuestra lista de enemigos reutilizables
