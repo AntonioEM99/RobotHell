@@ -66,7 +66,9 @@ void AATPCharacterBase::OnDamageTaken(AActor* damagedActor, float Damage, const 
 			isAlive = false;
 			health = 0;
 			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			// Aquí puedes añadir una animación de muerte después
+
+			APlayerController* shake = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+			shake->ClientStartCameraShake(cameraShake);
 		}
 
 		if (ATPShooterCharacter* player = Cast<ATPShooterCharacter>(this))

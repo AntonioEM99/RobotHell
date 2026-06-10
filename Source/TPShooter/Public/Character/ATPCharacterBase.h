@@ -47,4 +47,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	bool bCanUseWeapons = true;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UCameraShakeBase> cameraShake;
 };
