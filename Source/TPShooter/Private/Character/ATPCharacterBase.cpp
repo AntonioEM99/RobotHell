@@ -16,7 +16,7 @@ void AATPCharacterBase::BeginPlay()
 	OnTakeAnyDamage.AddDynamic(this, &AATPCharacterBase::OnDamageTaken);
 
 	// Spawn del arma (lo que tenías en el player)
-	if (gunClass)
+	if (bCanUseWeapons &&  gunClass)
 	{
 		currentGun = GetWorld()->SpawnActor<AGun>(gunClass);
 		if (currentGun)
