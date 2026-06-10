@@ -47,6 +47,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UHUDWidget> hudClass;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UHUDWidget* hudWidget;
 };
