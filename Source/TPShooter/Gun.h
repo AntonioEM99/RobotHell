@@ -28,7 +28,7 @@ public:
 	AController* ownerController = nullptr;
 
 	UPROPERTY(EditAnywhere)
-	float maxRange = 8000.0f;
+	float maxRange = 4000.0f;
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void HandleShoot();
@@ -43,7 +43,7 @@ public:
 	USoundBase* shootSound;
 
 	UPROPERTY(EditAnywhere)
-	float bulletDamage = 100.0f;
+	float bulletDamage = 10.0f;
 
 	void PullTrigger();
 
