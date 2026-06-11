@@ -28,7 +28,7 @@ public:
 	AController* ownerController = nullptr;
 
 	UPROPERTY(EditAnywhere)
-	float maxRange = 4000.0f;
+	float maxRange = 1000.0f;
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void HandleShoot();

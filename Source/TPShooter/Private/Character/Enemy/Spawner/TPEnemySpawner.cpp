@@ -5,6 +5,7 @@
 #include "Components/BoxComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "AIController.h" 
+#include "BrainComponent.h"
 #include "Character/ATPCharacterBase.h"
 
 ATPEnemySpawner::ATPEnemySpawner()
@@ -106,7 +107,7 @@ void ATPEnemySpawner::GetEnemyFromPool()
 				AIC->StopMovement();
               
 				// Opcional: Si usas Behavior Trees, puedes reiniciarlo aquí
-				// AIC->GetBrainComponent()->RestartLogic();
+				AIC->GetBrainComponent()->RestartLogic();
 			}
 
 			UE_LOG(LogTemp, Warning, TEXT("Pool: Enemigo despertado y NavMesh listo!"));
