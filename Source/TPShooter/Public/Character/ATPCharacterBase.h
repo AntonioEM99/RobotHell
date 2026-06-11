@@ -50,6 +50,14 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	bool bCanUseWeapons = true;
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+	bool bIsBoss = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+	bool bIsNormalEnemy = false;
+
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UCameraShakeBase> cameraShake;
 };
